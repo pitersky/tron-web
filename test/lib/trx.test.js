@@ -24,7 +24,7 @@ describe('TronWeb.trx', function () {
         tronWeb = tronWebBuilder.createInstance();
         // ALERT this works only with Tron Quickstart:
         accounts = await tronWebBuilder.getTestAccounts(-1);
-        emptyAccount = await TronWeb.createAccount();
+        // emptyAccount = await TronWeb.createAccount();
     });
 
     describe('#constructor()', function () {
@@ -38,9 +38,10 @@ describe('TronWeb.trx', function () {
 
     describe("#multiSignTransaction", async function () {
 
-        it('should sign a transaction', async function () {
+        it.only('should sign a transaction', async function () {
 
             const transaction = await tronWeb.transactionBuilder.freezeBalance(100e6, 3, 'BANDWIDTH', accounts.b58[1])
+            console.log(transaction.raw_data.contract)
             let signedTransaction = await tronWeb.trx.sign(transaction, accounts.pks[1]);
 
 
@@ -131,17 +132,132 @@ describe('TronWeb.trx', function () {
 
 
     describe("#freezeBalance", async function () {
+
+        let account;
+
+        before(async function () {
+            account = await tronWeb.trx.getAccount(accounts.b58[0]);
+        });
+
+        it('should freeze balance for energy or bandwidth', async function () {
+
+            const resources = ['BANDWIDTH', 'ENERGY'];
+            let res, parameter;
+
+            for (let resource of resources) {
+                res = await broadcaster(tronWeb.transactionBuilder.freezeBalance(100e6, 3, resource, accounts.b58[0]), accounts.pks[0]);
+                assert.isTrue(res.receipt.result);
+
+                parameter = txPars(res.receipt.transaction);
+                assert.equal(parameter.value.resource ? parameter.value.resource : 'BANDWIDTH', resource);
+                assert.equal(parameter.value.frozen_duration, 3);
+                assert.equal(parameter.value.frozen_balance, 100e6);
+                assert.equal(parameter.value.owner_address, accounts.hex[0]);
+            }
+
+        });
+
     });
+
+
     describe("#getAccount", async function () {
+
+        it('should get account info by address', async function () {
+
+            const addressTypes = ['hex', 'b58'];
+            let account;
+
+            for (let i = 0; i < 5; i++) {
+                for (let type of addressTypes) {
+                    account = await tronWeb.trx.getAccount(accounts[type][i]);
+                    assert.equal(account.address, accounts.hex[i]);
+                }
+            }
+
+        });
+
     });
+
+
     describe("#getAccountResources", async function () {
+
+        it('should get account resource by address', async function () {
+
+            const addressTypes = ['hex', 'b58'];
+            const resource = [5000, 43200000000, 50000000000];
+            let account;
+
+            for (let i = 0; i < 5; i++) {
+                for (let type of addressTypes) {
+                    account = await tronWeb.trx.getAccountResources(accounts[type][i]);
+                    assert.equal(account.freeNetLimit, resource[0]);
+                    assert.equal(account.TotalNetLimit, resource[1]);
+                    assert.equal(account.TotalEnergyLimit, resource[2]);
+                }
+            }
+
+        });
+
     });
+
+
     describe("#getBalance", async function () {
+
+        it('should get balance by address', async function () {
+
+            const addressTypes = ['hex', 'b58'];
+            let balance;
+
+            for (let i = 0; i < 5; i++) {
+                for (let type of addressTypes) {
+                    balance = await tronWeb.trx.getBalance(accounts[type][i]);
+                    assert.isTrue(!isNaN(balance));
+                }
+            }
+
+        });
+
     });
+
+
     describe("#getBandwidth", async function () {
+
+        it('should get bandwidth by address', async function () {
+
+            const addressTypes = ['hex', 'b58'];
+            let bp;
+
+            for (let i = 0; i < 5; i++) {
+                for (let type of addressTypes) {
+                    bp = await tronWeb.trx.getBandwidth(accounts[type][i]);
+                    assert.isTrue(!isNaN(bp));
+                }
+            }
+
+        });
+
     });
+
+
     describe("#getBlock", async function () {
+
+        it('should get block by address', async function () {
+
+            const addressTypes = ['hex', 'b58'];
+            let bp;
+
+            for (let i = 0; i < 5; i++) {
+                for (let type of addressTypes) {
+                    bp = await tronWeb.trx.getBlock(accounts[type][i]);
+                    assert.isTrue(!isNaN(bp));
+                }
+            }
+
+        });
+
     });
+
+
     describe("#getBlockByHash", async function () {
     });
     describe("#getBlockByNumber", async function () {
