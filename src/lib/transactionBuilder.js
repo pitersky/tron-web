@@ -434,12 +434,12 @@ export default class TransactionBuilder {
         if (!callback)
             return this.injectPromise(this.createSmartContract, options, issuerAddress);
 
-        const feeLimit = options.feeLimit || 1_000_000_000;
+        const feeLimit = options.feeLimit || 1000000000;
         let userFeePercentage = options.userFeePercentage;
         if (typeof userFeePercentage !== 'number' || !userFeePercentage) {
             userFeePercentage = 100;
         }
-        const originEnergyLimit = options.originEnergyLimit || 10_000_000;
+        const originEnergyLimit = options.originEnergyLimit || 10000000;
         const callValue = options.callValue || 0;
         const tokenValue = options.tokenValue;
         const tokenId = options.tokenId || options.token_id;
@@ -478,7 +478,7 @@ export default class TransactionBuilder {
                 type: 'integer',
                 value: feeLimit,
                 gt: 0,
-                lte: 1_000_000_000
+                lte: 1000000000
             },
             {
                 name: 'callValue',
@@ -498,7 +498,7 @@ export default class TransactionBuilder {
                 type: 'integer',
                 value: userFeePercentage,
                 gte: 0,
-                lte: 10_000_000
+                lte: 10000000
             },
             {
                 name: 'parameters',
@@ -639,7 +639,7 @@ export default class TransactionBuilder {
             feeLimit
         } = Object.assign({
             callValue: 0,
-            feeLimit: 1_000_000_000
+            feeLimit: 1000000000
         }, options)
 
         if (this.validator.notValid([
@@ -648,7 +648,7 @@ export default class TransactionBuilder {
                 type: 'integer',
                 value: feeLimit,
                 gt: 0,
-                lte: 1_000_000_000
+                lte: 1000000000
             },
             {
                 name: 'callValue',
@@ -1437,7 +1437,7 @@ export default class TransactionBuilder {
                 type: 'integer',
                 value: originEnergyLimit,
                 gte: 0,
-                lte: 10_000_000
+                lte: 10000000
             }
         ], callback))
             return;
